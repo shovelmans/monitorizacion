@@ -358,11 +358,6 @@ grafana:
     dashboards:
       enabled: true
       searchNamespace: ALL
-      multicluster:
-        global:
-          enabled: false
-        etcd:
-          enabled: false
     datasources:
       enabled: true
       defaultDatasourceEnabled: true
@@ -373,6 +368,11 @@ grafana:
       url: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
       access: proxy
       isDefault: true
+      alertmanager:
+        enabled: true
+        name: Alertmanager
+        uid: alertmanager
+        implementation: prometheus
   extraConfigmapMounts: []
   deleteDatasources: []
   additionalDataSources: []
