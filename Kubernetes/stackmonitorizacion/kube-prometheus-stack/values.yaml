@@ -1,23 +1,6 @@
-crds:
-  enabled: false
-
-prometheusOperator:
-  enabled: true
-  admissionWebhooks:
-    enabled: true
-    certManager:
-      enabled: false
-    patch:
-      enabled: true
-      serviceAccount:
-        create: true
-        name: ""
-
-prometheus:
-  enabled: true
-
-alertmanager:
-  enabled: true
+# --- Reglas y exporters por defecto ---
+defaultRules:
+  create: true
 
 kubeStateMetrics:
   enabled: true
@@ -25,8 +8,82 @@ kubeStateMetrics:
 nodeExporter:
   enabled: true
 
-grafana:
+# --- Operator / Webhooks (evita error si no usas cert-manager) ---
+prometheusOperator:
+  admissionWebhooks:
+    enabled: true
+    certManager:
+      enabled: false   # importante si NO vas a inyectar cert-manager
+  tls:
+    enabled: true
+
+# --- Prometheus ---
+prometheus:
   enabled: true
   service:
-    type: LoadBalancer
-    port: 80
+    type: ClusterIP
+  ingress:
+    enabled: false
+  prometheusSpec:
+    retention: 15d
+    # Usa PVC para datos
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
+    # Descubre todos los ServiceMonitor/PodMonitor del cluster
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+
+# --- Alertmanager ---
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+
+# --- Grafana ---
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: "CambiaEstaPassSegura"  # cámbiala
+  service:
+    type: ClusterIP
+  persistence:
+    enabled: true
+    type: pvc
+    size: 10Gi
+    accessModes: ["ReadWriteOnce"]
+  # Plugins opcionales (ejemplo):
+  plugins:
+    - grafana-piechart-panel
+  # Ingress para acceder a Grafana
+  ingress:
+    enabled: true
+    ingressClassName: nginx    # usa tu controlador (nginx, traefik, etc.)
+    hosts:
+      - grafana.tudominio.com
+    path: /
+    pathType: Prefix
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.tudominio.com
+
+  # (Opcional) DataSources extra. Por defecto ya provisiona Prometheus interno.
+  additionalDataSources: []
+  # - name: Loki
+  #   type: loki
+  #   access: proxy
+  #   url: http://loki-gateway.loki.svc.cluster.local
+
+# --- CRDs ---
+# El chart ya maneja los CRDs; si despliegas con ArgoCD evita SkipCRDs=true.
