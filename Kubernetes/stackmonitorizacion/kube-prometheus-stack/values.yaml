@@ -1,11 +1,8 @@
 crds:
   enabled: false
 
-grafana:
+prometheusOperator:
   enabled: true
-  service:
-    type: LoadBalancer
-    port: 80
 
 prometheus:
   enabled: true
@@ -18,3 +15,9 @@ kubeStateMetrics:
 
 nodeExporter:
   enabled: true
+
+grafana:
+  enabled: true
+  service:
+    type: LoadBalancer
+    port: 80
