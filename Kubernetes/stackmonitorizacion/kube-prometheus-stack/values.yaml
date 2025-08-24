@@ -905,7 +905,7 @@ prometheusOperator:
     loadBalancerIP: ""
     loadBalancerSourceRanges: []
     externalTrafficPolicy: Cluster
-    type: LoadBalancer
+    type: ClusterIP
     externalIPs: []
   labels: {}
   annotations: {}
