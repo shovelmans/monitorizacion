@@ -7,12 +7,9 @@ prometheusOperator:
     enabled: true
     patch:
       enabled: true
-
-grafana:
-  enabled: true
-  service:
-    type: LoadBalancer
-    port: 80
+      serviceAccount:
+        create: true
+        name: ""
 
 prometheus:
   enabled: true
@@ -25,3 +22,9 @@ kubeStateMetrics:
 
 nodeExporter:
   enabled: true
+
+grafana:
+  enabled: true
+  service:
+    type: LoadBalancer
+    port: 80
