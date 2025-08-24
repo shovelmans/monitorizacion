@@ -343,12 +343,12 @@ grafana:
     enabled: true
     ingressClassName: nginx
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      cert-manager.io/cluster-issuer: selfsigned-issuer
     hosts:
     - grafana.midominio.com
     path: /
     tls:
-    - secretName: grafana-tls
+    - secretName: grafana-selfsigned-tls
       hosts:
       - grafana.midominio.com
   serviceAccount:
@@ -358,6 +358,11 @@ grafana:
     dashboards:
       enabled: true
       searchNamespace: ALL
+      multicluster:
+        global:
+          enabled: false
+        etcd:
+          enabled: false
     datasources:
       enabled: true
       defaultDatasourceEnabled: true
